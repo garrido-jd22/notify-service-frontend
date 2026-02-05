@@ -693,11 +693,8 @@ export default function ConsolidatedNotificationsPage() {
 
         {/* Right: Settings */}
         <section className="md:col-span-12 lg:col-span-4">
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-3">
             <h2 className="text-base font-semibold">Configuración de Envío</h2>
-            <Button isIconOnly size="sm" radius="full" variant="flat">
-              <Icon name="more_horiz" className="text-xl" />
-            </Button>
           </div>
 
           <div className="flex flex-col gap-2">

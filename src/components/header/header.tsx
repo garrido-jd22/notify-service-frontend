@@ -1,5 +1,5 @@
 "use client";
-import { Button, Chip } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { Icon } from "../icon/icon";
 import { useRouter } from "next/navigation";
 
@@ -15,7 +15,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-sm">
+    <header className="z-40 w-full">
       <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-4 md:px-6">
         <div className="hidden w-[72px] md:block" />
 
@@ -24,26 +24,13 @@ export function Header() {
             Notificaciones Consolidadas
           </h1>
           <div className="flex items-center">
-            {/* <Chip
-              color={localStorage.getItem("api_key") ? "success" : "danger"}
-              variant="flat"
-              startContent={
-                localStorage.getItem("api_key") ?
-                  <span className="mr-1 inline-flex h-2 w-2 rounded-full bg-emerald-500" /> :
-                  <span className="mr-1 inline-flex h-2 w-2 rounded-full bg-danger-500" />
-
-              }
-              className="hidden sm:inline-flex"
-            >
-              API Key: {localStorage.getItem("api_key") ? "Valida" : "Invalida"}
-            </Chip> */}
 
             <Button
               className="ms-2"
               size="sm"
               color="danger"
               radius="full"
-              variant="light"
+              variant="shadow"
               onPress={exit}
             >
               Salir
