@@ -1,0 +1,48 @@
+.main_content {
+    display: grid;
+    height: 100vh;
+    grid-template-columns: 270px auto;
+    grid-template-rows: auto;
+    grid-template-areas: "sidenav router_content";
+    /* transition: grid-template-columns 0.3s; */
+}
+
+.sidenav {
+    grid-area: sidenav;
+
+}
+
+.sidenav::-webkit-scrollbar {
+    -webkit-appearance: none !important;
+    height: 6px;
+}
+
+.sidenav::-webkit-scrollbar:vertical {
+    width: 6px !important;
+}
+
+.sidenav::-webkit-scrollbar-thumb {
+    background-color: #b9b9b9 !important;
+    border-radius: 20px !important;
+}
+
+.router_content {
+    grid-area: router_content;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding: 20px 24px;
+}
+
+.router_content::-webkit-scrollbar {
+    -webkit-appearance: none !important;
+    height: 6px;
+}
+
+.router_content::-webkit-scrollbar:vertical {
+    width: 6px !important;
+}
+
+.router_content::-webkit-scrollbar-thumb {
+    background-color: #b9b9b9 !important;
+    border-radius: 20px !important;
+}
