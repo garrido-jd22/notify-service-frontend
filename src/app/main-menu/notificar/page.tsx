@@ -31,6 +31,7 @@ import {
   ListboxItem,
   Listbox,
   ScrollShadow,
+  Selection
 } from "@heroui/react";
 
 import { AppService } from "../../../services/app.service";
@@ -201,9 +202,7 @@ export default function ConsolidatedNotificationsPage() {
   ]);
 
   // Selección tabla
-  const [selectedKeys, setSelectedKeys] = React.useState<Set<React.Key>>(
-    () => new Set([])
-  );
+  const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
 
   // parentId destino seleccionado por el usuario (checkbox de "LINEAS ASOCIADAS")
   const [destinationParentId, setDestinationParentId] = React.useState<string>("");
@@ -226,8 +225,13 @@ export default function ConsolidatedNotificationsPage() {
   }, [creditsSeed, query, creditStatuses, notifStatuses]);
 
   const selectedCredits = React.useMemo(() => {
+    // Si se seleccionaron todos
+    if (selectedKeys === "all") {
+      return credits;
+    }
+    // Si es un Set, filtramos por los IDs contenidos en él
     return creditsSeed.filter((c) => selectedKeys.has(c.referencia));
-  }, [creditsSeed, selectedKeys]);
+  }, [creditsSeed, credits, selectedKeys]);
 
   // === NUEVO: líneas asociadas basadas en parentId (de los créditos SELECCIONADOS) ===
   const associatedLines = React.useMemo<AssociatedLine[]>(() => {
@@ -292,12 +296,10 @@ export default function ConsolidatedNotificationsPage() {
     }
   };
 
-  const onSelectionChange = (keys: any) => {
-    if (keys === "all") {
-      setSelectedKeys(new Set(credits.map((c) => c.referencia)));
-      return;
-    }
-    setSelectedKeys(new Set(Array.from(keys as Set<React.Key>)));
+  const onSelectionChange = (keys: Selection) => {
+    // HeroUI ya maneja el objeto Selection que internamente 
+    // puede ser un Set o el string "all"
+    setSelectedKeys(keys);
   };
 
   const totals = React.useMemo(() => {
