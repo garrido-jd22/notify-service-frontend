@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@heroui/react";
+import { Button, Tooltip } from "@heroui/react";
 import Link from "next/link";
 
 import { ThemeSwitcher } from "../../components/layout/ThemeSwitcher";
@@ -25,15 +25,27 @@ export function Sidenav() {
             <div className="mt-8 flex flex-col gap-3">
 
                 <Link href="/main-menu/notificar" onClick={(e) => e.preventDefault()}>
-                    <Button isIconOnly radius="lg" variant="solid" className="">
-                        <Icon name="play_arrow" className="text-2xl" />
-                    </Button>
+                    <Tooltip content="Notificar Universidades" placement="right">
+                        <Button isIconOnly radius="lg" variant="solid" className="">
+                            <Icon name="attach_email" className="text-2xl" />
+                        </Button>
+                    </Tooltip>
+                </Link>
+
+                <Link href="/main-menu/historial" onClick={(e) => e.preventDefault()}>
+                    <Tooltip content="Historial de envios" placement="right">
+                        <Button isIconOnly radius="lg" variant="flat">
+                            <Icon name="history" className="text-2xl" />
+                        </Button>
+                    </Tooltip>
                 </Link>
 
                 <Link href="/main-menu/parametrizar" onClick={(e) => e.preventDefault()}>
-                    <Button isIconOnly radius="lg" variant="flat">
-                        <Icon name="tune" className="text-2xl" />
-                    </Button>
+                    <Tooltip content="Parametrización" placement="right">
+                        <Button isIconOnly radius="lg" variant="flat">
+                            <Icon name="tune" className="text-2xl" />
+                        </Button>
+                    </Tooltip>
                 </Link>
             </div>
 

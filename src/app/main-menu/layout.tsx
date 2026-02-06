@@ -15,11 +15,11 @@ export default function MainMenuLayout({ children }: { children: React.ReactNode
                 loop
                 playsInline
                 preload="auto"
-                poster="/assets/img/atardecer.jpg"
+                // poster="/assets/img/atardecer.jpg"
             >
                 <source src="/assets/video/playa-atardecer.mp4" type="video/mp4" />
             </video>
-            <div className="absolute inset-0 -z-10 bg-white/0 dark:bg-black/60 backdrop-blur-[1px]" />
+            <div className="absolute inset-0 -z-10 bg-white/0 dark:bg-black/50 backdrop-blur-[1px]" />
 
             {/* Top bar */}
             <Header />

@@ -403,7 +403,7 @@ export default function ConsolidatedNotificationsPage() {
             <h2 className="text-base font-semibold">Gestión de Créditos</h2>
           </div>
 
-          <Card className="rounded-2xl border border-neutral-200/70 bg-white/80 shadow-sm backdrop-blur-xl dark:border-neutral-800/70 dark:bg-neutral-950/60">
+          <Card className="rounded-2xl border border-neutral-200/70 bg-white/80 shadow-sm backdrop-blur dark:border-neutral-800/70 dark:bg-neutral-950/60">
             <CardBody className="p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Input
@@ -701,7 +701,7 @@ export default function ConsolidatedNotificationsPage() {
 
           <div className="flex flex-col gap-2">
             {/* === LINEAS ASOCIADAS (DINÁMICO SEGÚN SELECCIÓN) === */}
-            <Card className="rounded-2xl border border-neutral-200/70 bg-white/80 shadow-sm backdrop-blur-xl dark:border-neutral-800/70 dark:bg-neutral-950/60">
+            <Card className="rounded-2xl border border-neutral-200/70 bg-white/80 shadow-sm backdrop-blur dark:border-neutral-800/70 dark:bg-neutral-950/60">
               <CardHeader className="px-4 pt-4 pb-2">
                 <p className="text-xs font-semibold tracking-wide text-default-500">
                   LÍNEAS ASOCIADAS

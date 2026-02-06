@@ -16,12 +16,12 @@ export function Header() {
 
   return (
     <header className="z-40 w-full">
-      <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-4 md:px-6">
+      <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-4 md:px-4">
         <div className="hidden w-[72px] md:block" />
 
         <div className="flex flex-1 items-center justify-between gap-3">
           <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
-            Notificaciones Consolidadas
+            One2notify
           </h1>
           <div className="flex items-center">
 
@@ -30,7 +30,7 @@ export function Header() {
               size="sm"
               color="danger"
               radius="full"
-              variant="shadow"
+              variant="faded"
               onPress={exit}
             >
               Salir

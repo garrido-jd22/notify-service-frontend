@@ -109,21 +109,12 @@ export default function ParametrizacionPage() {
         <div className="min-h-screen w-full text-neutral-900 dark:text-neutral-50">
             {/* Content */}
             <main className="mx-auto max-w-[1400px] px-4 pb-10 pt-6 md:px-6">
-                <Chip
-                    color="danger"
-                    variant="flat"
-                    startContent={
-                        <span className="mr-1 inline-flex h-2 w-2 rounded-full bg-danger" />
-                    }
-                    className="hidden sm:inline-flex ms-18 mb-6"
-                >
-                    Modulo en desarrollo
-                </Chip>
+                <Chip className="ms-18 mb-4" variant="shadow" color="warning">Modulo en desarrollo</Chip>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-12 ps-18">
                     {/* Left column */}
                     <div className="md:col-span-7">
                         {/* Universidades Activas */}
-                        <Card className="rounded-3xl border border-neutral-200/70 bg-white shadow-sm dark:border-neutral-800/70 dark:bg-neutral-950">
+                        <Card className="rounded-2xl border border-neutral-200/70 bg-white/80 shadow-sm backdrop-blur dark:border-neutral-800/70 dark:bg-neutral-950/60">
                             <CardHeader className="flex items-start justify-between gap-4 px-6 pt-6">
                                 <div className="flex items-start gap-3">
                                     <span className="mt-1 inline-flex h-6 w-2 rounded-full bg-[#8B5CF6]" />
@@ -197,7 +188,7 @@ export default function ParametrizacionPage() {
                         </Card>
 
                         {/* Constructor de campos */}
-                        <Card className="mt-6 rounded-3xl border border-neutral-200/70 bg-white shadow-sm dark:border-neutral-800/70 dark:bg-neutral-950">
+                        <Card className="mt-6 rounded-2xl border border-neutral-200/70 bg-white/80 shadow-sm backdrop-blur dark:border-neutral-800/70 dark:bg-neutral-950/60">
                             <CardHeader className="px-6 pt-6">
                                 <div className="flex items-start gap-3">
                                     <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F3E8FF] dark:bg-[#2A1B3D]">
@@ -250,7 +241,7 @@ export default function ParametrizacionPage() {
 
                     {/* Right column */}
                     <div className="md:col-span-5">
-                        <Card className="rounded-3xl border border-neutral-200/70 bg-white shadow-sm dark:border-neutral-800/70 dark:bg-neutral-950">
+                        <Card className="rounded-2xl border border-neutral-200/70 bg-white/80 shadow-sm backdrop-blur dark:border-neutral-800/70 dark:bg-neutral-950/60">
                             <CardHeader className="flex items-start justify-between gap-4 px-6 pt-6">
                                 <div>
                                     <h2 className="text-lg font-semibold">Líneas de Crédito</h2>
