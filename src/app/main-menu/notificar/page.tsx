@@ -839,10 +839,6 @@ export default function ConsolidatedNotificationsPage() {
                   </PopoverContent>
                 </Popover>
 
-                {/* <button onClick={() => {
-                  console.log(payload)
-                }}>Mostrar payload</button> */}
-
               </CardBody>
             </Card>
           </div>
