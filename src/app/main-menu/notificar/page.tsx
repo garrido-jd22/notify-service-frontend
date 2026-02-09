@@ -305,7 +305,7 @@ export default function ConsolidatedNotificationsPage() {
   const totals = React.useMemo(() => {
     return {
       count: selectedCredits.length,
-      amount: selectedCredits.reduce((acc, c) => acc + Number(c.valor_desembolso), 0),
+      amount: selectedCredits.reduce((acc, c) => acc + Number(c.total_financiado), 0),
     };
   }, [selectedCredits]);
 
