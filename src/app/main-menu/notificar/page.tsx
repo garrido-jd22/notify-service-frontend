@@ -151,21 +151,29 @@ function normalizeNotifStatus(raw: string): NotificationStatus {
   return "Pendiente";
 }
 
-function buildPayload(parentIdDestino: string, creditsSelected: CreditRow[], approvedDateByRef: Record<string, CalendarDate>, aciertaByRef: Record<string, string>) {
+function buildPayload(
+  parentIdDestino: string,
+  creditsSelected: CreditRow[],
+  approvedDateByRef: Record<string, CalendarDate>,
+  aciertaByRef: Record<string, string>,
+  totalFinancedByRef: Record<string, string>
+) {
   return {
     // parentId: "1111-1111-1111-1111",
     parentId: parentIdDestino,
     credits: creditsSelected.map((c) => {
       const overrideDate = approvedDateByRef[c.referencia];
       const overrideAcierta = aciertaByRef[c.referencia];
+      const overrideTotalFinanced = totalFinancedByRef[c.referencia];
       const fecha_aprobado = overrideDate ? calendarDateToISO(overrideDate) : c.fecha_aprobado;
+      const total_financiado = overrideTotalFinanced || c.total_financiado; // Si se ha modificado el total financiado.
       const acierta = overrideAcierta || c.acierta;
 
       return {
         valor_desembolso: c.valor_desembolso,
         referencia: c.referencia,
         linea_credito: c.linea_credito,
-        total_financiado: c.total_financiado,
+        total_financiado: total_financiado,
         cuota_inicial: c.cuota_inicial,
         numero_cuotas: String(c.numero_cuotas),
         plazo_dias: String(c.plazo_dias),
@@ -188,6 +196,7 @@ export default function ConsolidatedNotificationsPage() {
   const [query, setQuery] = React.useState<string>("");
   const [detail, setDetail] = React.useState<CreditRow>({} as CreditRow);
   const [approvedDateByRef, setApprovedDateByRef] = React.useState<Record<string, CalendarDate>>({});
+  const [totalFinancedByRef, settotalFinancedByRef] = React.useState<Record<string, string>>({});
   const [aciertaByRef, setAciertaByRef] = React.useState<Record<string, string>>({});
   const [isOpenPop, setIsOpen] = React.useState(false);
   const [isOpen2, setIsOpen2] = React.useState(false);
@@ -315,8 +324,8 @@ export default function ConsolidatedNotificationsPage() {
   // Payload listo para enviar
   const payload = React.useMemo(() => {
     if (!destinationParentId || selectedCredits.length === 0) return null;
-    return buildPayload(destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef);
-  }, [destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef]);
+    return buildPayload(destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef, totalFinancedByRef);
+  }, [destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef, totalFinancedByRef]);
 
   const handleSendConsolidated = async () => {
     setIsOpen(false);
@@ -355,14 +364,16 @@ export default function ConsolidatedNotificationsPage() {
     for (const c of selectedCredits) {
       const overrideDate = approvedDateByRef[c.referencia];
       const overrideAcierta = aciertaByRef[c.referencia];
+      const overrideTotalFinanced = totalFinancedByRef[c.referencia];
       const fecha_aprobado = overrideDate ? calendarDateToISO(overrideDate) : c.fecha_aprobado;
+      const total_financiado = overrideTotalFinanced || c.total_financiado;
       const acierta = overrideAcierta || c.acierta;
 
       const p = {
         valor_desembolso: c.valor_desembolso,
         referencia: c.referencia,
         linea_credito: c.linea_credito,
-        total_financiado: c.total_financiado,
+        total_financiado: total_financiado,
         cuota_inicial: c.cuota_inicial,
         numero_cuotas: String(c.numero_cuotas),
         plazo_dias: String(c.plazo_dias),
@@ -519,7 +530,24 @@ export default function ConsolidatedNotificationsPage() {
                           <TableRow key={c.referencia}>
                             <TableCell className="font-semibold">{c.nombre_estudiante}</TableCell>
                             <TableCell className="text-default-500">{c.linea_credito}</TableCell>
-                            <TableCell className="font-semibold">{formatCOP(c.total_financiado)}</TableCell>
+                            <TableCell className="font-semibold min-w-[130px]">
+                              <Input
+                                value={totalFinancedByRef[c.referencia] ?? c.total_financiado}
+                                // También es buena práctica detenerlo en eventos específicos del input
+                                onPointerDown={(e) => e.stopPropagation()}
+                                onValueChange={(val) => {
+                                  if (!val) return;
+                                  settotalFinancedByRef((prev) => ({ ...prev, [c.referencia]: val }));
+                                }}
+                                type="number"
+                                variant="flat"
+                                endContent={
+                                  <div className="pointer-events-none flex items-center">
+                                    <span className="text-default-400 text-small">$</span>
+                                  </div>
+                                }
+                              />
+                            </TableCell>
                             <TableCell className="font-semibold">{formatCOP(c.valor_desembolso)}</TableCell>
                             <TableCell className="font-semibold">{formatCOP(c.cuota_inicial)}</TableCell>
                             <TableCell className="text-default-500">{c.numero_cuotas} meses</TableCell>
@@ -534,7 +562,7 @@ export default function ConsolidatedNotificationsPage() {
                                 }}
                               />
                             </TableCell>
-                            <TableCell className="text-default-500 min-w-[100px]">
+                            <TableCell className="text-default-500 min-w-[80px]">
                               <Input
                                 value={aciertaByRef[c.referencia] ?? c.acierta}
                                 // También es buena práctica detenerlo en eventos específicos del input
@@ -838,6 +866,8 @@ export default function ConsolidatedNotificationsPage() {
                     </div>
                   </PopoverContent>
                 </Popover>
+
+                {/* <button onClick={() => console.log(payload)}>Mostrar payload</button> */}
 
               </CardBody>
             </Card>
