@@ -511,7 +511,7 @@ export default function ConsolidatedNotificationsPage() {
 
                         return (
                           <TableRow key={c.referencia}>
-                            <TableCell className="font-semibold">{c.titular}</TableCell>
+                            <TableCell className="font-semibold">{c.nombre_estudiante}</TableCell>
                             <TableCell className="text-default-500">{c.linea_credito}</TableCell>
                             <TableCell className="font-semibold">{formatCOP(c.total_financiado)}</TableCell>
                             <TableCell className="font-semibold">{formatCOP(c.valor_desembolso)}</TableCell>
