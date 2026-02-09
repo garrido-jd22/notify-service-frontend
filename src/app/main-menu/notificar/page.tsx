@@ -151,13 +151,15 @@ function normalizeNotifStatus(raw: string): NotificationStatus {
   return "Pendiente";
 }
 
-function buildPayload(parentIdDestino: string, creditsSelected: CreditRow[], approvedDateByRef: Record<string, CalendarDate>) {
+function buildPayload(parentIdDestino: string, creditsSelected: CreditRow[], approvedDateByRef: Record<string, CalendarDate>, aciertaByRef: Record<string, string>) {
   return {
     // parentId: "1111-1111-1111-1111",
     parentId: parentIdDestino,
     credits: creditsSelected.map((c) => {
-      const override = approvedDateByRef[c.referencia];
-      const fecha_aprobado = override ? calendarDateToISO(override) : c.fecha_aprobado;
+      const overrideDate = approvedDateByRef[c.referencia];
+      const overrideAcierta = aciertaByRef[c.referencia];
+      const fecha_aprobado = overrideDate ? calendarDateToISO(overrideDate) : c.fecha_aprobado;
+      const acierta = overrideAcierta || c.acierta;
 
       return {
         valor_desembolso: c.valor_desembolso,
@@ -171,7 +173,7 @@ function buildPayload(parentIdDestino: string, creditsSelected: CreditRow[], app
         titular: c.titular,
         estudiante: c.estudiante,
         nombre_estudiante: c.nombre_estudiante,
-        acierta: c.acierta,
+        acierta: acierta,
         fecha_aprobado: fecha_aprobado,
       }
     }),
@@ -186,6 +188,7 @@ export default function ConsolidatedNotificationsPage() {
   const [query, setQuery] = React.useState<string>("");
   const [detail, setDetail] = React.useState<CreditRow>({} as CreditRow);
   const [approvedDateByRef, setApprovedDateByRef] = React.useState<Record<string, CalendarDate>>({});
+  const [aciertaByRef, setAciertaByRef] = React.useState<Record<string, string>>({});
   const [isOpenPop, setIsOpen] = React.useState(false);
   const [isOpen2, setIsOpen2] = React.useState(false);
 
@@ -312,8 +315,8 @@ export default function ConsolidatedNotificationsPage() {
   // Payload listo para enviar
   const payload = React.useMemo(() => {
     if (!destinationParentId || selectedCredits.length === 0) return null;
-    return buildPayload(destinationParentId, selectedCredits, approvedDateByRef);
-  }, [destinationParentId, selectedCredits, approvedDateByRef]);
+    return buildPayload(destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef);
+  }, [destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef]);
 
   const handleSendConsolidated = async () => {
     setIsOpen(false);
@@ -350,8 +353,10 @@ export default function ConsolidatedNotificationsPage() {
 
     const newPayloads: any[] = [];
     for (const c of selectedCredits) {
-      const override = approvedDateByRef[c.referencia];
-      const fecha_aprobado = override ? calendarDateToISO(override) : c.fecha_aprobado;
+      const overrideDate = approvedDateByRef[c.referencia];
+      const overrideAcierta = aciertaByRef[c.referencia];
+      const fecha_aprobado = overrideDate ? calendarDateToISO(overrideDate) : c.fecha_aprobado;
+      const acierta = overrideAcierta || c.acierta;
 
       const p = {
         valor_desembolso: c.valor_desembolso,
@@ -365,7 +370,7 @@ export default function ConsolidatedNotificationsPage() {
         titular: c.titular,
         estudiante: c.estudiante,
         nombre_estudiante: c.nombre_estudiante,
-        acierta: c.acierta,
+        acierta: acierta,
         // parentId: "1111-1111-1111-1111",
         parentId: destinationParentId,
         fecha_aprobado: fecha_aprobado,
@@ -472,7 +477,7 @@ export default function ConsolidatedNotificationsPage() {
               <Divider className="my-4" />
 
               <div className="overflow-x-auto">
-                <div className="min-w-[1400px]">
+                <div className="min-w-[1500px]">
                   <Table
                     aria-label="Tabla de créditos"
                     selectionMode="multiple"
@@ -495,6 +500,7 @@ export default function ConsolidatedNotificationsPage() {
                       <TableColumn>Plazo</TableColumn>
                       <TableColumn>Referencia</TableColumn>
                       <TableColumn>Fecha aprobado</TableColumn>
+                      <TableColumn>Acierta</TableColumn>
                       <TableColumn>Estado crédito</TableColumn>
                       <TableColumn>Notificación</TableColumn>
                       <TableColumn className="text-right">Detalle</TableColumn>
@@ -528,6 +534,19 @@ export default function ConsolidatedNotificationsPage() {
                                 }}
                               />
                             </TableCell>
+                            <TableCell className="text-default-500 min-w-[100px]">
+                              <Input
+                                value={aciertaByRef[c.referencia] ?? c.acierta}
+                                // También es buena práctica detenerlo en eventos específicos del input
+                                onPointerDown={(e) => e.stopPropagation()}
+                                onValueChange={(val) => {
+                                  if (!val) return;
+                                  setAciertaByRef((prev) => ({ ...prev, [c.referencia]: val }));
+                                }}
+                                type="number"
+                                variant="flat"
+                              />
+                            </TableCell>
                             <TableCell>
                               <Chip size="sm" variant="faded" color={creditColor}>
                                 {credit ?? c.estado_credito}
@@ -542,6 +561,7 @@ export default function ConsolidatedNotificationsPage() {
                               <Button
                                 isIconOnly
                                 size="sm"
+                                radius="full"
                                 variant="light"
                                 endContent={<Icon name="visibility" className="text-lg" />}
                                 onPress={() => selectCredit(c)}
@@ -818,6 +838,10 @@ export default function ConsolidatedNotificationsPage() {
                     </div>
                   </PopoverContent>
                 </Popover>
+
+                {/* <button onClick={() => {
+                  console.log(payload)
+                }}>Mostrar payload</button> */}
 
               </CardBody>
             </Card>
