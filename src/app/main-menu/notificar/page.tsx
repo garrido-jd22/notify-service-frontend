@@ -31,7 +31,8 @@ import {
   ListboxItem,
   Listbox,
   ScrollShadow,
-  Selection
+  Selection,
+  Tooltip
 } from "@heroui/react";
 
 import { AppService } from "../../../services/app.service";
@@ -76,10 +77,11 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-type AssociatedLine = {
+type CreditLine = {
+  id: number;
   parentId: string;
-  title: string; // nombre visible (ej: linea_credito)
-  count: number; // cuántos créditos seleccionados de esa línea
+  nombre: string;
+  descripcion: string;
 };
 
 export const itemsPage = [
@@ -111,6 +113,12 @@ async function getCredits(valueSearch: string, limit: number): Promise<{
   return AppService.get<{ count: number; credits: CreditRow[]; errors: [] }>(
     "/v1/kuenta/receivables/custom",
     { q: valueSearch, limit }
+  );
+}
+
+async function getCreditLine(): Promise<CreditLine[]> {
+  return AppService.get<CreditLine[]>(
+    "/v1/linea-credito/"
   );
 }
 
@@ -192,6 +200,7 @@ export default function ConsolidatedNotificationsPage() {
   const [limit, setLimit] = React.useState<number>(10);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [creditsSeed, setCredits] = React.useState<CreditRow[]>([]);
+  const [creditLine, setCreditLine] = React.useState<CreditLine[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [query, setQuery] = React.useState<string>("");
   const [detail, setDetail] = React.useState<CreditRow>({} as CreditRow);
@@ -245,48 +254,7 @@ export default function ConsolidatedNotificationsPage() {
     return creditsSeed.filter((c) => selectedKeys.has(c.referencia));
   }, [creditsSeed, credits, selectedKeys]);
 
-  // === NUEVO: líneas asociadas basadas en parentId (de los créditos SELECCIONADOS) ===
-  const associatedLines = React.useMemo<AssociatedLine[]>(() => {
-    const map = new Map<string, AssociatedLine>();
-
-    for (const c of selectedCredits) {
-      const pid = c.parentId?.trim();
-      if (!pid) continue;
-
-      const current = map.get(pid);
-      if (!current) {
-        map.set(pid, {
-          parentId: pid,
-          title: c.linea_credito || `Línea ${pid}`,
-          count: 1,
-        });
-      } else {
-        current.count += 1;
-      }
-    }
-
-    return Array.from(map.values()).sort((a, b) => a.title.localeCompare(b.title));
-  }, [selectedCredits]);
-
-  // Si el usuario selecciona créditos y aún no ha elegido destino,
-  // por defecto escogemos el primer parentId disponible
-  React.useEffect(() => {
-    if (!associatedLines.length) {
-      setDestinationParentId("");
-      return;
-    }
-    if (!destinationParentId || !associatedLines.some((x) => x.parentId === destinationParentId)) {
-      setDestinationParentId(associatedLines[0].parentId);
-    }
-  }, [associatedLines, destinationParentId]);
-
   const search = async () => {
-    const apiKey = localStorage.getItem("api_key");
-    if (!apiKey) {
-      AlertService.error("Sin sesión", "No se encontró API Key. Inicia sesión nuevamente.");
-      return;
-    }
-
     setLoading(true);
     try {
       const data = await getCredits(query, limit);
@@ -300,6 +268,23 @@ export default function ConsolidatedNotificationsPage() {
         } else {
           AlertService.error("Error", err.data?.message || err.message);
         }
+      } else {
+        AlertService.error("Error de conexión", "No se pudo consultar el backend.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const searchCreditLine = async () => {
+    setLoading(true);
+    try {
+      const data: CreditLine[] = await getCreditLine();
+      setCreditLine(data ?? [])
+      console.log("LINEAS DE CREDITO =>", creditLine);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        AlertService.error("Error", err.data?.message || err.message);
       } else {
         AlertService.error("Error de conexión", "No se pudo consultar el backend.");
       }
@@ -754,38 +739,35 @@ export default function ConsolidatedNotificationsPage() {
                 <p className="text-xs font-semibold tracking-wide text-default-500">
                   LÍNEAS ASOCIADAS
                 </p>
+                <Tooltip content="Cargar Lineas de destino" placement="top" color="success">
+                  <Button isIconOnly radius="full" variant="solid" color="success" className="ms-auto" onPress={searchCreditLine}>
+                    <Icon name="database_search" className="text-2xl" />
+                  </Button>
+                </Tooltip>
               </CardHeader>
 
               <CardBody className="px-4 pb-4 pt-1">
-                {associatedLines.length === 0 ? (
-                  <p className="text-sm text-default-500">
-                    Selecciona créditos en la tabla para ver las líneas disponibles.
-                  </p>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    {associatedLines.map((line) => (
-                      <div
-                        key={line.parentId}
-                        className="flex items-start gap-3 rounded-2xl border border-neutral-200/70 bg-white/60 p-3 dark:border-neutral-800/70 dark:bg-neutral-900/40"
-                      >
-                        {/* Checkbox: elige parentId DESTINO */}
-                        <Checkbox
-                          isSelected={destinationParentId === line.parentId}
-                          onValueChange={(checked) => {
-                            if (checked) setDestinationParentId(line.parentId);
-                          }}
-                        />
-
-                        <div className="min-w-0">
-                          <p className="text-sm font-semibold">{line.title}</p>
-                          <p className="text-xs text-default-500">
-                            parentId: {line.parentId} • créditos seleccionados: {line.count}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <p className="text-sm text-default-500 mb-4">
+                  Consulta las lineas de crédito y selecciona la linea de destino a la cual quieres notificar.
+                </p>
+                <Select
+                  className="w-full"
+                  variant="faded"
+                  label="Línea de destino"
+                  placeholder="Selecciona una línea"
+                  selectedKeys={destinationParentId ? [destinationParentId] : []}
+                  onSelectionChange={(keys) => {
+                    const val = Array.from(keys)[0] as string;
+                    setDestinationParentId(val);
+                  }}
+                  isDisabled={loading || creditLine.length === 0}
+                >
+                  {creditLine.map((line) => (
+                    <SelectItem key={line.parentId} textValue={line.nombre}>
+                      {line.nombre}
+                    </SelectItem>
+                  ))}
+                </Select>
               </CardBody>
             </Card>
 
@@ -867,7 +849,7 @@ export default function ConsolidatedNotificationsPage() {
                   </PopoverContent>
                 </Popover>
 
-                {/* <button onClick={() => console.log(payload)}>Mostrar payload</button> */}
+                {/* <button className="mt-8" onClick={() => console.log(payload)}>Mostrar payload</button> */}
 
               </CardBody>
             </Card>
