@@ -740,7 +740,7 @@ export default function ConsolidatedNotificationsPage() {
                   LÍNEAS ASOCIADAS
                 </p>
                 <Tooltip content="Cargar Lineas de destino" placement="top" color="success">
-                  <Button isIconOnly radius="full" variant="solid" color="success" className="ms-auto" onPress={searchCreditLine}>
+                  <Button isIconOnly radius="full" isDisabled={loading} variant="solid" color="success" className="ms-auto" onPress={searchCreditLine}>
                     <Icon name="database_search" className="text-2xl" />
                   </Button>
                 </Tooltip>

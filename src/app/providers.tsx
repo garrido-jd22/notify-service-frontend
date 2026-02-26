@@ -2,15 +2,19 @@
 import { HeroUIProvider } from '@heroui/react'
 import { ToastProvider } from "@heroui/toast";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { useRouter } from 'next/navigation'; // 1. Importa el router
+
 import React from 'react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const router = useRouter(); // 2. Inicializa el router
 
   return (
-    <HeroUIProvider>
+    // 3. Pasa la función navigate al provider
+    <HeroUIProvider navigate={router.push}>
       <NextThemesProvider
-        attribute="class" // Importante para trabajar con Tailwind/HeroUI
-        defaultTheme="light" // o "light"/"dark"
+        attribute="class"
+        defaultTheme="light"
         enableSystem
       >
         <div className="fixed top-0 left-0 right-0 flex justify-center z-[100]">

@@ -24,29 +24,26 @@ export function Sidenav() {
 
             <div className="mt-8 flex flex-col gap-3">
 
-                <Link href="/main-menu/notificar" onClick={(e) => e.preventDefault()}>
-                    <Tooltip content="Notificar Universidades" placement="right">
-                        <Button isIconOnly radius="lg" variant="solid" className="">
-                            <Icon name="attach_email" className="text-2xl" />
-                        </Button>
-                    </Tooltip>
-                </Link>
-
-                <Link href="/main-menu/historial" onClick={(e) => e.preventDefault()}>
-                    <Tooltip content="Historial de envios" placement="right">
-                        <Button isIconOnly radius="lg" variant="flat">
-                            <Icon name="history" className="text-2xl" />
-                        </Button>
-                    </Tooltip>
-                </Link>
-
-                <Link href="/main-menu/parametrizar" onClick={(e) => e.preventDefault()}>
-                    <Tooltip content="Parametrización" placement="right">
-                        <Button isIconOnly radius="lg" variant="flat">
-                            <Icon name="tune" className="text-2xl" />
-                        </Button>
-                    </Tooltip>
-                </Link>
+                <Tooltip content="Dashboard" placement="right">
+                    <Button as={Link} href="/main-menu/dashboard" isIconOnly radius="lg" variant="solid" className="">
+                        <Icon name="dashboard" className="text-2xl" />
+                    </Button>
+                </Tooltip>
+                <Tooltip content="Notificar Universidades" placement="right">
+                    <Button as={Link} href="/main-menu/notificar" isIconOnly radius="lg" variant="solid" className="">
+                        <Icon name="attach_email" className="text-2xl" />
+                    </Button>
+                </Tooltip>
+                {/* <Tooltip content="Historial de envios" placement="right">
+                    <Button isIconOnly radius="lg" variant="flat">
+                        <Icon name="history" className="text-2xl" />
+                    </Button>
+                </Tooltip>
+                <Tooltip content="Parametrización" placement="right">
+                    <Button isIconOnly radius="lg" variant="flat">
+                        <Icon name="tune" className="text-2xl" />
+                    </Button>
+                </Tooltip> */}
             </div>
 
             <div className="mt-auto mb-4">
