@@ -27,11 +27,12 @@ export function DemographicBarChart({ data }: DemographicBarChartProps) {
               <YAxis stroke="#6b7280" className="dark:stroke-gray-400" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(255, 255, 255, 0.95)",
-                  border: "1px solid #e5e7eb",
+                  backgroundColor: "",
+                  border: "",
                   borderRadius: "12px",
                   padding: "12px",
                 }}
+                wrapperClassName="bg-white/80 dark:bg-neutral-800"
               />
               <Bar dataKey="value" fill="#ec4899" radius={[8, 8, 0, 0]} />
             </BarChart>
@@ -48,11 +49,12 @@ export function DemographicBarChart({ data }: DemographicBarChartProps) {
               <YAxis stroke="#6b7280" className="dark:stroke-gray-400" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(255, 255, 255, 0.95)",
-                  border: "1px solid #e5e7eb",
+                  backgroundColor: "",
+                  border: "",
                   borderRadius: "12px",
                   padding: "12px",
                 }}
+                wrapperClassName="bg-white/80 dark:bg-neutral-800"
               />
               <Bar dataKey="value" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
             </BarChart>
@@ -69,11 +71,12 @@ export function DemographicBarChart({ data }: DemographicBarChartProps) {
               <YAxis stroke="#6b7280" className="dark:stroke-gray-400" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(255, 255, 255, 0.95)",
-                  border: "1px solid #e5e7eb",
+                  backgroundColor: "",
+                  border: "",
                   borderRadius: "12px",
                   padding: "12px",
                 }}
+                wrapperClassName="bg-white/80 dark:bg-neutral-800"
               />
               <Bar dataKey="value" fill="#14b8a6" radius={[8, 8, 0, 0]} />
             </BarChart>

@@ -3,9 +3,24 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 
 interface CreditBarChartProps {
   data: any[];
+  selectedLines: string[];
 }
 
-export function CreditBarChart({ data }: CreditBarChartProps) {
+export function CreditBarChart({ data, selectedLines }: CreditBarChartProps) {
+
+  const getBarColor = (line: string): string => {
+    const fixed: Record<string, string> = {};
+
+    if (fixed[line]) return fixed[line];
+
+    let hash = 0;
+    for (let i = 0; i < line.length; i++) {
+      hash = line.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = Math.abs(hash % 360);
+    return `hsl(${hue}, 70%, 50%)`; // Color vibrante y legible
+  };
+
   return (
     <div className="p-6">
       <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
@@ -18,17 +33,17 @@ export function CreditBarChart({ data }: CreditBarChartProps) {
           <YAxis dataKey="name" type="category" stroke="#6b7280" className="dark:stroke-gray-400" width={180} />
           <Tooltip
             contentStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.95)",
-              border: "1px solid #e5e7eb",
+              backgroundColor: "",
+              border: "",
               borderRadius: "12px",
               padding: "12px",
             }}
-            wrapperClassName="dark:bg-gray-800"
+            wrapperClassName="bg-white/80 dark:bg-neutral-800"
           />
           <Legend />
-          <Bar dataKey="EAFIT" fill="#3b82f6" radius={[0, 8, 8, 0]} />
-          <Bar dataKey="CUC" fill="#10b981" radius={[0, 8, 8, 0]} />
-          <Bar dataKey="REFORMADA" fill="#f59e0b" radius={[0, 8, 8, 0]} />
+          {selectedLines.map((line) => (
+            <Bar key={line} dataKey={line} fill={getBarColor(line)} radius={[0, 8, 8, 0]} />
+          ))}
         </BarChart>
       </ResponsiveContainer>
     </div>

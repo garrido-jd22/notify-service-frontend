@@ -16,7 +16,7 @@ export function Header() {
 
   return (
     <header className="z-40 w-full">
-      <div className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-4 md:px-4">
+      <div className="mx-auto flex max-w-[1800px] items-center gap-3 px-4 py-4 md:px-4">
         <div className="hidden w-[72px] md:block" />
 
         <div className="flex flex-1 items-center justify-between gap-3">

@@ -17,11 +17,12 @@ interface Credit {
 
 interface PortfolioTableProps {
   credits: Credit[];
+  selectedLines: string[];
 }
 
-export function PortfolioTable({ credits }: PortfolioTableProps) {
+export function PortfolioTable({ credits, selectedLines }: PortfolioTableProps) {
   // Agrupar créditos por línea de crédito (institución educativa)
-  const tableData = ["EAFIT", "CUC", "REFORMADA"].map((institution) => {
+  const tableData = selectedLines.map((institution) => {
     const institutionCredits = credits.filter((c) => c.line === institution);
     const totalAmount = institutionCredits.reduce((sum, c) => sum + c.amount, 0);
     const totalCapitalBalance = institutionCredits.reduce((sum, c) => sum + c.capitalBalance, 0);

@@ -8,18 +8,19 @@ interface Credit {
 
 interface PortfolioStateChartProps {
   credits: Credit[];
+  selectedLines: string[]
 }
 
-export function PortfolioStateChart({ credits }: PortfolioStateChartProps) {
+export function PortfolioStateChart({ credits, selectedLines }: PortfolioStateChartProps) {
   // Calcular datos: cada institución con conteos por estado
-  const institutions = ["EAFIT", "CUC", "REFORMADA"];
+  // const institutions = ["EAFIT", "CUC", "REFORMADA"];
   const states = ["DESEMBOLSADO", "PAGADO", "REFINANCIADO", "MORA", "CASTIGADO"];
 
-  const data = institutions.map((institution) => {
-    const row: any = { name: institution };
+  const data = selectedLines.map((productLine) => {
+    const row: any = { name: productLine };
     
     states.forEach((state) => {
-      const count = credits.filter((c) => c.line === institution && c.state === state).length;
+      const count = credits.filter((c) => c.line === productLine && c.state === state).length;
       row[state] = count;
     });
 
@@ -38,12 +39,12 @@ export function PortfolioStateChart({ credits }: PortfolioStateChartProps) {
           <YAxis dataKey="name" type="category" stroke="#6b7280" className="dark:stroke-gray-400" width={100} />
           <Tooltip
             contentStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.95)",
-              border: "1px solid #e5e7eb",
+              backgroundColor: "",
+              border: "",
               borderRadius: "12px",
               padding: "12px",
             }}
-            wrapperClassName="dark:bg-gray-800"
+            wrapperClassName="bg-white/80 dark:bg-neutral-800"
           />
           <Legend />
           <Bar dataKey="DESEMBOLSADO" fill="#8b5cf6" radius={[0, 8, 8, 0]} />

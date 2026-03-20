@@ -16,28 +16,34 @@ import { parseDate, CalendarDate } from "@internationalized/date";
 import { Icon } from "../../components/icon/icon";
 
 const CREDIT_STATES = [
-  { label: "INCOMPLETO" },
-  { label: "PENDIENTE" },
-  { label: "APROBADO" },
-  { label: "FORMALIZADO" },
-  { label: "ESPERANDO GARANTÍAS" },
-  { label: "DESISTIDO" },
-  { label: "DESEMBOLSADO" },
-  { label: "PAGADO" },
-  { label: "REFINANCIADO" },
-  { label: "MORA" },
-  { label: "CASTIGADO" },
+  { label: "PROCESANDO" }, // 🟢
+  { label: "PENDIENTE" }, // 🟢
+  { label: "APROBADO" },// 🟢
+  { label: "RECHAZADO" }, // 🟢
+  { label: "FORMALIZADO" }, // 🟢
+  { label: "DESEMBOLSANDO" }, // 🟢
+  { label: "INCOMPLETO" },  // 🟢
+  { label: "PAGO PENDIENTE" },  // 🟢
+  { label: "ESPERANDO GARANTIAS" }, // 🟢
+  { label: "REFINANCIANDO" },  // 🟢
+  { label: "CONTRAPROPUESTA" },  // 🟢
+  { label: "DESEMBOLSADO" }, // 🔷
+  { label: "PAGADO" },// 🔷
+  { label: "MORA" }, // 🔷
+  { label: "CASTIGADO" }, // 🔷
+  { label: "REFINANCIADO" }, // 🔷
 ];
-
-const CREDIT_LINES = ["EAFIT", "CUC", "REFORMADA"];
 
 interface FilterSectionProps {
   selectedStates: string[];
   setSelectedStates: (states: string[]) => void;
   selectedLines: string[];
   setSelectedLines: (lines: string[]) => void;
+  productLines: string[];
   creditLimit: number;
   setCreditLimit: (limit: number) => void;
+  minDate: string;
+  maxDate: string;
   dateFrom: string;
   setDateFrom: (date: string) => void;
   dateTo: string;
@@ -64,8 +70,11 @@ export function FilterSection({
   setSelectedStates,
   selectedLines,
   setSelectedLines,
+  productLines,
   creditLimit,
   setCreditLimit,
+  minDate,
+  maxDate,
   dateFrom,
   setDateFrom,
   dateTo,
@@ -85,7 +94,7 @@ export function FilterSection({
     alert("Exportando datos a Excel...");
   };
 
-  const limits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+  const limits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000];
   const ageRanges = ["todos", "18-25", "26-35", "36-45", "46-60", "60+"];
   const strata = ["todos", "1", "2", "3", "4", "5", "6"];
   const genders = ["todos", "masculino", "femenino", "otro"];
@@ -98,7 +107,7 @@ export function FilterSection({
         <div className="flex w-full items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold tracking-wide text-default-500">FILTROS</p>
-            <h2 className="text-base font-semibold">Filtros de Búsqueda</h2>
+            <h2 className="text-base font-semibold"></h2>
           </div>
 
           <Button
@@ -140,6 +149,7 @@ export function FilterSection({
             variant="faded"
             label="Fecha desde"
             value={parseDate(dateFrom)}
+            minValue={parseDate(minDate)}
             onChange={(d) => d && setDateFrom(isoFromCalendarDate(d as CalendarDate))}
             isDisabled={isLoading}
           />
@@ -150,6 +160,7 @@ export function FilterSection({
             variant="faded"
             label="Fecha hasta"
             value={parseDate(dateTo)}
+            maxValue={parseDate(maxDate)}
             onChange={(d) => d && setDateTo(isoFromCalendarDate(d as CalendarDate))}
             isDisabled={isLoading}
           />
@@ -165,8 +176,8 @@ export function FilterSection({
                 return (
                   <Chip
                     key={s.label}
-                    variant={active ? "solid" : "flat"}
-                    color={active ? "secondary" : "default"}
+                    variant={active ? "shadow" : "flat"}
+                    color={active ? "primary" : "default"}
                     className={`cursor-pointer select-none ${active ? "" : "opacity-80"}`}
                     onClick={() => {
                       if (active) setSelectedStates(selectedStates.filter((x) => x !== s.label));
@@ -193,7 +204,7 @@ export function FilterSection({
             }}
             isDisabled={isLoading}
           >
-            {CREDIT_LINES.map((line) => (
+            {productLines.map((line) => (
               <SelectItem key={line}>{line}</SelectItem>
             ))}
           </Select>
@@ -245,7 +256,7 @@ export function FilterSection({
           </Select>
 
           {/* Acciones */}
-          <div className="md:col-span-12 flex flex-col gap-2 sm:flex-row sm:justify-end">
+          {/* <div className="md:col-span-12 flex flex-col gap-2 sm:flex-row sm:justify-end">
             <Button
               variant="flat"
               radius="lg"
@@ -273,7 +284,7 @@ export function FilterSection({
             >
               Exportar Excel
             </Button>
-          </div>
+          </div> */}
         </div>
       </CardBody>
     </Card>

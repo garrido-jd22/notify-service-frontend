@@ -42,7 +42,7 @@ import { Icon } from "../../../components/icon/icon";
 import { DatePicker } from "@heroui/date-picker";
 import { parseDate, CalendarDate } from "@internationalized/date";
 
-type NotificationStatus = "Pendiente" | "Enviado" | "Fallido";
+type NotificationStatus = "Pendiente" | "Enviado";
 type CreditStatus = "DESEMBOLSADO" | "REFINANCIADO";
 
 type CreditRow = {
@@ -155,7 +155,6 @@ function normalizeCreditStatus(raw: string): CreditStatus | null {
 function normalizeNotifStatus(raw: string): NotificationStatus {
   const v = (raw || "").trim().toLowerCase();
   if (v === "enviado") return "Enviado";
-  if (v === "fallido") return "Fallido";
   return "Pendiente";
 }
 
@@ -219,7 +218,6 @@ export default function ConsolidatedNotificationsPage() {
   const [notifStatuses, setNotifStatuses] = React.useState<NotificationStatus[]>([
     "Pendiente",
     "Enviado",
-    "Fallido",
   ]);
 
   // Selección tabla
@@ -396,7 +394,7 @@ export default function ConsolidatedNotificationsPage() {
   }
 
   return (
-    <main className="mx-auto max-w-[1400px] px-4 pb-10 pt-6 md:px-6 md:pl-[96px]">
+    <main className="mx-auto max-w-[1800px] px-4 pb-10 pt-6 md:px-6 md:pl-[96px]">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-6">
         {/* Center: Credits */}
         <section className="md:col-span-8 lg:col-span-8">
@@ -466,7 +464,6 @@ export default function ConsolidatedNotificationsPage() {
                 >
                   <Checkbox value="Pendiente">Pendiente</Checkbox>
                   <Checkbox value="Enviado">Enviado</Checkbox>
-                  <Checkbox value="Fallido">Fallido</Checkbox>
                 </CheckboxGroup>
               </div>
 
@@ -509,7 +506,7 @@ export default function ConsolidatedNotificationsPage() {
 
                         const creditColor = credit === "REFINANCIADO" ? "secondary" : "primary";
                         const notifColor =
-                          notif === "Enviado" ? "success" : notif === "Fallido" ? "danger" : "warning";
+                          notif === "Enviado" ? "success" : "warning";
 
                         return (
                           <TableRow key={c.referencia}>
@@ -684,11 +681,7 @@ export default function ConsolidatedNotificationsPage() {
                                 size="sm"
                                 variant="shadow"
                                 color={
-                                  detail?.estado_notificacion === "Enviado"
-                                    ? "success"
-                                    : detail?.estado_notificacion === "Fallido"
-                                      ? "danger"
-                                      : "warning"
+                                  detail?.estado_notificacion === "Enviado" ? "success" : "warning"
                                 }
                                 className="ml-auto"
                               >
