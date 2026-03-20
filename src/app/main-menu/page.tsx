@@ -37,7 +37,7 @@ export default function MainMenu() {
                             <Card
                                 key={item.title}
                                 shadow="none"
-                                className="p-5 
+                                className="
                   rounded-2xl
                   border border-neutral-200/70
                   bg-white/80
@@ -49,10 +49,10 @@ export default function MainMenu() {
                   dark:bg-neutral-950/60
                 "
                             >
-                                <CardBody className="p-8 sm:p-9">
+                                <CardBody className="">
                                     <div className="flex items-start gap-5 text-left">
                                         <div
-                                            className={`flex h-14 me-4 w-14 shrink-0 items-center justify-center rounded-full shadow-sm ${item.iconWrapClass}`}
+                                            className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full shadow-sm ${item.iconWrapClass}`}
                                         >
                                             <Icon name={item.icon} className="text-[26px] drop-shadow-sm" />
                                         </div>
@@ -61,9 +61,9 @@ export default function MainMenu() {
                                             <h3 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
                                                 {item.title}
                                             </h3>
-                                            <p className="mt-3 text-sm leading-7 text-neutral-600 dark:text-neutral-300">
+                                            <span className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
                                                 {item.description}
-                                            </p>
+                                            </span>
                                         </div>
                                     </div>
                                 </CardBody>
