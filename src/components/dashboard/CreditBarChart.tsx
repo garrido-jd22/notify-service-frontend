@@ -26,7 +26,7 @@ export function CreditBarChart({ data, selectedLines }: CreditBarChartProps) {
       <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
         Créditos por Estado y Línea de Crédito
       </h3>
-      <ResponsiveContainer width="100%" height={600}>
+      <ResponsiveContainer width="100%" height={650}>
         <BarChart data={data} layout="vertical" margin={{ left: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-gray-700" />
           <XAxis type="number" stroke="#6b7280" className="dark:stroke-gray-400" />

@@ -42,7 +42,7 @@ export function ArrearRangeChart({ credits, selectedLines }: ArrearRangeChartPro
       <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
         Rango de Mora por Universidad
       </h3>
-      <ResponsiveContainer width="100%" height={350}>
+      <ResponsiveContainer width="100%" height={500}>
         <BarChart data={data} layout="vertical" margin={{ left: 20 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-gray-700" />
           <XAxis type="number" stroke="#6b7280" className="dark:stroke-gray-400" />
