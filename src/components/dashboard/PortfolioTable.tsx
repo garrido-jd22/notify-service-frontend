@@ -38,12 +38,19 @@ export function PortfolioTable({ credits, selectedLines }: PortfolioTableProps) 
     };
   });
 
+  const formatoCOP = new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
   return (
     <div className="p-6">
       <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
         Resumen por Institución Educativa
       </h3>
-      
+
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -75,25 +82,24 @@ export function PortfolioTable({ credits, selectedLines }: PortfolioTableProps) 
                   {row.institution}
                 </td>
                 <td className="py-4 px-4 text-right text-gray-800 dark:text-gray-200">
-                  ${row.amount.toLocaleString()}
+                  {formatoCOP.format(row.amount)}
                 </td>
                 <td className="py-4 px-4 text-right text-gray-800 dark:text-gray-200">
-                  ${row.capitalBalance.toLocaleString()}
+                  {formatoCOP.format(row.capitalBalance)}
                 </td>
                 <td className="py-4 px-4 text-right text-orange-600 dark:text-orange-400 font-semibold">
-                  ${row.capitalArrears.toLocaleString()}
+                  {formatoCOP.format(row.capitalArrears)}
                 </td>
                 <td className="py-4 px-4 text-right">
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${
-                      row.arrearsPercentage > 10
-                        ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                        : row.arrearsPercentage > 5
+                    className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${row.arrearsPercentage > 10
+                      ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                      : row.arrearsPercentage > 5
                         ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
                         : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                    }`}
+                      }`}
                   >
-                    {row.arrearsPercentage.toFixed(2)}%
+                    {row.arrearsPercentage.toFixed(0)}%
                   </span>
                 </td>
               </tr>
@@ -103,21 +109,21 @@ export function PortfolioTable({ credits, selectedLines }: PortfolioTableProps) 
             <tr className="border-t-2 border-gray-300 dark:border-gray-700 font-bold">
               <td className="py-4 px-4 text-gray-800 dark:text-gray-100">TOTAL</td>
               <td className="py-4 px-4 text-right text-gray-800 dark:text-gray-100">
-                ${tableData.reduce((sum, row) => sum + row.amount, 0).toLocaleString()}
+                {formatoCOP.format(tableData.reduce((sum, row) => sum + row.amount, 0))}
               </td>
               <td className="py-4 px-4 text-right text-gray-800 dark:text-gray-100">
-                ${tableData.reduce((sum, row) => sum + row.capitalBalance, 0).toLocaleString()}
+                {formatoCOP.format(tableData.reduce((sum, row) => sum + row.capitalBalance, 0))}
               </td>
               <td className="py-4 px-4 text-right text-orange-600 dark:text-orange-400">
-                ${tableData.reduce((sum, row) => sum + row.capitalArrears, 0).toLocaleString()}
+                {formatoCOP.format(tableData.reduce((sum, row) => sum + row.capitalArrears, 0))}
               </td>
               <td className="py-4 px-4 text-right text-gray-800 dark:text-gray-100">
                 {tableData.length > 0
                   ? (
-                      (tableData.reduce((sum, row) => sum + row.capitalArrears, 0) /
-                        tableData.reduce((sum, row) => sum + row.capitalBalance, 0)) *
-                      100
-                    ).toFixed(2)
+                    (tableData.reduce((sum, row) => sum + row.capitalArrears, 0) /
+                      tableData.reduce((sum, row) => sum + row.capitalBalance, 0)) *
+                    100
+                  ).toFixed(0)
                   : 0}
                 %
               </td>

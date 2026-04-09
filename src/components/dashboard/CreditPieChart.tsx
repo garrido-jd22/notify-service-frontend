@@ -34,6 +34,13 @@ export function CreditPieChart({ data, lineValue }: CreditPieChartProps) {
     console.log(lineValue)
   }, [])
 
+  const formatoCOP = new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
   return (
     <div className="p-6">
       <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
@@ -79,7 +86,7 @@ export function CreditPieChart({ data, lineValue }: CreditPieChartProps) {
               <span className="text-sm text-gray-700 dark:text-gray-300">{entry.name}</span>
             </div>
             <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-              ${entry.amount.toLocaleString()}
+              {formatoCOP.format(entry.amount)}
             </span>
           </div>
         ))}
@@ -96,7 +103,7 @@ export function CreditPieChart({ data, lineValue }: CreditPieChartProps) {
             <TableRow key={line.name}>
               <TableCell>{line.name}</TableCell>
               <TableCell>{line.count}</TableCell>
-              <TableCell>${line.amount.toLocaleString()}</TableCell>
+              <TableCell>{formatoCOP.format(line.amount)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

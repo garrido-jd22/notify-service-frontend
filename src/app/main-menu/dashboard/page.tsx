@@ -37,6 +37,12 @@ interface Credit {
   capitalBalance: number;
   capitalArrears: number;
   daysInArrears: number;
+  studentPhone: any;
+  additionalPhone: any;
+  accountNumber: any;
+  bank: any;
+  city: any;
+  email: any;
 }
 
 interface BodyCredits {
@@ -309,11 +315,13 @@ function DashboardPageContent() {
 
       {/* Tabs HEROUI */}
       <Tabs
+        fullWidth
         selectedKey={activeTab}
         onSelectionChange={() => changeTab()}
         variant="solid"
+        color="primary"
         radius="lg"
-        className="mb-4"
+        className="my-4"
       >
         <Tab key="originacion" title="Originación" />
         <Tab key="cartera" title="Cartera" />
@@ -323,6 +331,7 @@ function DashboardPageContent() {
         {/* Filtros: tu componente intacto */}
         <section className="lg:col-span-12">
           <FilterSection
+            credits={filteredCredits}
             selectedStates={selectedStates}
             setSelectedStates={setSelectedStates}
             selectedLines={selectedLines}

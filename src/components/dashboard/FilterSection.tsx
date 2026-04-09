@@ -14,6 +14,31 @@ import {
 import { DatePicker } from "@heroui/react";
 import { parseDate, CalendarDate } from "@internationalized/date";
 import { Icon } from "../../components/icon/icon";
+import * as XLSX from "xlsx";
+import { AlertService } from "@/src/services/alert.service";
+
+interface Credit {
+  id: number;
+  state: string;
+  line: string;
+  amount: number;
+  date: Date;
+  age: number;
+  stratum: number;
+  gender: string;
+  installmentsPaid: number;
+  totalInstallments: number;
+  installmentAmount: number;
+  capitalBalance: number;
+  capitalArrears: number;
+  daysInArrears: number;
+  studentPhone: any;
+  additionalPhone: any;
+  accountNumber: any;
+  bank: any;
+  city: any;
+  email: any;
+}
 
 const CREDIT_STATES = [
   { label: "PROCESANDO" }, // 🟢
@@ -35,6 +60,7 @@ const CREDIT_STATES = [
 ];
 
 interface FilterSectionProps {
+  credits: Credit[];
   selectedStates: string[];
   setSelectedStates: (states: string[]) => void;
   selectedLines: string[];
@@ -66,6 +92,7 @@ function isoFromCalendarDate(d: CalendarDate) {
 }
 
 export function FilterSection({
+  credits,
   selectedStates,
   setSelectedStates,
   selectedLines,
@@ -89,9 +116,45 @@ export function FilterSection({
   isLoading,
   availableStates,
 }: FilterSectionProps) {
+
   const handleExport = () => {
-    // aquí conectas export real
-    alert("Exportando datos a Excel...");
+    if (credits.length === 0) {
+      AlertService.warning("Advertencia", "No hay datos para exportar.")
+      return;
+    }
+
+    // 1. Opcional: Mapear los datos para que las cabeceras del Excel sean bonitas
+    const dataToExport = credits.map(c => ({
+      "ID": c.id,
+      "Estado": c.state,
+      "Línea": c.line,
+      "Monto": c.amount,
+      "Fecha": c.date.toString(), // O formatear con Intl.DateTimeFormat
+      "Edad": c.age,
+      "Estrato": c.stratum,
+      "Género": c.gender,
+      "Cuotas Pagadas": c.installmentsPaid,
+      "Total Cuotas": c.totalInstallments,
+      "Valor Cuota": c.installmentAmount,
+      "Saldo Capital": c.capitalBalance,
+      "Mora Capital": c.capitalArrears,
+      "Días Mora": c.daysInArrears,
+      "Correo": c.email,
+      "Celular del estudiante": c.studentPhone,
+      "Telefono adicional": c.additionalPhone,
+      "Numero de cuenta": c.accountNumber,
+      "Banco": c.bank,
+      "Ciudad": c.city,
+    }));
+
+    // 2. Crear el libro de trabajo (Worksheet)
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Créditos");
+
+    // 3. Generar el archivo y disparar la descarga
+    XLSX.writeFile(workbook, `Reporte_Creditos_${new Date().getTime()}.xlsx`);
+    AlertService.success("Archivo exportado!", "Puedes ver el reporte en la carpeta de descargas.")
   };
 
   const limits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000];
@@ -256,35 +319,18 @@ export function FilterSection({
           </Select>
 
           {/* Acciones */}
-          {/* <div className="md:col-span-12 flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button
-              variant="flat"
-              radius="lg"
-              onPress={() => {
-                setSelectedStates([]);
-                setSelectedLines([]);
-                setCreditLimit(100);
-                setDateFrom("2024-01-01");
-                setDateTo("2024-12-31");
-                setAgeRange("todos");
-                setStratum("todos");
-                setGender("todos");
-              }}
-              isDisabled={isLoading}
-            >
-              Limpiar
-            </Button>
-
+          <div className="md:col-span-12 flex flex-col gap-2 sm:flex-row sm:justify-end">
             <Button
               radius="lg"
-              variant="bordered"
+              variant="solid"
+              color="success"
               onPress={handleExport}
               startContent={<Icon name="download" className="text-xl" />}
               isDisabled={isLoading}
             >
               Exportar Excel
             </Button>
-          </div> */}
+          </div>
         </div>
       </CardBody>
     </Card>

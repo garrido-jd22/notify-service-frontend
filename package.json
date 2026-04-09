@@ -19,7 +19,8 @@
     "react-dom": "19.2.3",
     "react-is": "^19.2.4",
     "recharts": "^3.7.0",
-    "sileo": "^0.1.4"
+    "sileo": "^0.1.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
