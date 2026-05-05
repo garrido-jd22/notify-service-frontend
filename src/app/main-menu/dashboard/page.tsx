@@ -24,6 +24,10 @@ import {
 // Tipo de crédito
 interface Credit {
   id: number;
+  idHolder: any;
+  holderName: any;
+  idStudent: any;
+  student: any;
   state: string;
   line: string;
   amount: number;
