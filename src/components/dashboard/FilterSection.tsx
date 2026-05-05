@@ -19,10 +19,10 @@ import { AlertService } from "@/src/services/alert.service";
 
 interface Credit {
   id: number;
-  idHolder: any,
-  holderName: any,
-  idStudent: any,
-  student: any,
+  idHolder: any;
+  holderName: any;
+  idStudent: any;
+  student: any;
   state: string;
   line: string;
   amount: number;
