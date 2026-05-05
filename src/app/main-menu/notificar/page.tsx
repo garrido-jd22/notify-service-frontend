@@ -163,7 +163,8 @@ function buildPayload(
   creditsSelected: CreditRow[],
   approvedDateByRef: Record<string, CalendarDate>,
   aciertaByRef: Record<string, string>,
-  totalFinancedByRef: Record<string, string>
+  totalFinancedByRef: Record<string, string>,
+  idStudentByRef: Record<string, string>
 ) {
   return {
     // parentId: "1111-1111-1111-1111",
@@ -172,8 +173,10 @@ function buildPayload(
       const overrideDate = approvedDateByRef[c.referencia];
       const overrideAcierta = aciertaByRef[c.referencia];
       const overrideTotalFinanced = totalFinancedByRef[c.referencia];
+      const overrideidStudentByRef = idStudentByRef[c.referencia];
       const fecha_aprobado = overrideDate ? calendarDateToISO(overrideDate) : c.fecha_aprobado;
       const total_financiado = overrideTotalFinanced || c.total_financiado; // Si se ha modificado el total financiado.
+      const idStudent = overrideidStudentByRef || c.estudiante;
       const acierta = overrideAcierta || c.acierta;
 
       return {
@@ -186,7 +189,7 @@ function buildPayload(
         plazo_dias: String(c.plazo_dias),
         cedula_titular: c.cedula_titular,
         titular: c.titular,
-        estudiante: c.estudiante,
+        estudiante: idStudent,
         nombre_estudiante: c.nombre_estudiante,
         acierta: acierta,
         fecha_aprobado: fecha_aprobado,
@@ -205,6 +208,7 @@ export default function ConsolidatedNotificationsPage() {
   const [detail, setDetail] = React.useState<CreditRow>({} as CreditRow);
   const [approvedDateByRef, setApprovedDateByRef] = React.useState<Record<string, CalendarDate>>({});
   const [totalFinancedByRef, settotalFinancedByRef] = React.useState<Record<string, string>>({});
+  const [idStudentByRef, setidStudentByRef] = React.useState<Record<string, string>>({});
   const [aciertaByRef, setAciertaByRef] = React.useState<Record<string, string>>({});
   const [isOpenPop, setIsOpen] = React.useState(false);
   const [isOpen2, setIsOpen2] = React.useState(false);
@@ -307,8 +311,8 @@ export default function ConsolidatedNotificationsPage() {
   // Payload listo para enviar
   const payload = React.useMemo(() => {
     if (!destinationParentId || selectedCredits.length === 0) return null;
-    return buildPayload(destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef, totalFinancedByRef);
-  }, [destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef, totalFinancedByRef]);
+    return buildPayload(destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef, totalFinancedByRef, idStudentByRef);
+  }, [destinationParentId, selectedCredits, approvedDateByRef, aciertaByRef, totalFinancedByRef, idStudentByRef]);
 
   const handleSendConsolidated = async () => {
     setIsOpen(false);
@@ -348,8 +352,10 @@ export default function ConsolidatedNotificationsPage() {
       const overrideDate = approvedDateByRef[c.referencia];
       const overrideAcierta = aciertaByRef[c.referencia];
       const overrideTotalFinanced = totalFinancedByRef[c.referencia];
-      const fecha_aprobado = overrideDate ? calendarDateToISO(overrideDate) : c.fecha_aprobado;
       const total_financiado = overrideTotalFinanced || c.total_financiado;
+      const overrideidStudentByRef = idStudentByRef[c.referencia];
+      const idStudent = overrideidStudentByRef || c.estudiante;
+      const fecha_aprobado = overrideDate ? calendarDateToISO(overrideDate) : c.fecha_aprobado;
       const acierta = overrideAcierta || c.acierta;
 
       const p = {
@@ -362,7 +368,7 @@ export default function ConsolidatedNotificationsPage() {
         plazo_dias: String(c.plazo_dias),
         cedula_titular: c.cedula_titular,
         titular: c.titular,
-        estudiante: c.estudiante,
+        estudiante: idStudent,
         nombre_estudiante: c.nombre_estudiante,
         acierta: acierta,
         // parentId: "1111-1111-1111-1111",
@@ -432,6 +438,7 @@ export default function ConsolidatedNotificationsPage() {
 
                 <Button
                   isIconOnly
+                  aria-label="Buscar créditos"
                   radius="lg"
                   color="primary"
                   size="lg"
@@ -470,7 +477,7 @@ export default function ConsolidatedNotificationsPage() {
               <Divider className="my-4" />
 
               <div className="overflow-x-auto">
-                <div className="min-w-[1500px]">
+                <div className="min-w-[1600px]">
                   <Table
                     aria-label="Tabla de créditos"
                     selectionMode="multiple"
@@ -485,6 +492,7 @@ export default function ConsolidatedNotificationsPage() {
                     }}
                   >
                     <TableHeader>
+                      <TableColumn>Documento</TableColumn>
                       <TableColumn>Estudiante</TableColumn>
                       <TableColumn>Línea de crédito</TableColumn>
                       <TableColumn>Total Financiado</TableColumn>
@@ -510,15 +518,28 @@ export default function ConsolidatedNotificationsPage() {
 
                         return (
                           <TableRow key={c.referencia}>
+                            <TableCell className="font-semibold min-w-[130px]">
+                              <Input
+                                aria-label={`Documento del estudiante ${c.nombre_estudiante}`}
+                                value={idStudentByRef[c.referencia] ?? c.estudiante}
+                                onPointerDown={(e) => e.stopPropagation()}
+                                onClick={(e) => e.stopPropagation()}
+                                onValueChange={(val) => {
+                                  setidStudentByRef((prev) => ({ ...prev, [c.referencia]: val }));
+                                }}
+                                type="number"
+                                variant="flat"
+                              />
+                            </TableCell>
                             <TableCell className="font-semibold">{c.nombre_estudiante}</TableCell>
                             <TableCell className="text-default-500">{c.linea_credito}</TableCell>
                             <TableCell className="font-semibold min-w-[130px]">
                               <Input
+                                aria-label={`Total financiado de la referencia ${c.referencia}`}
                                 value={totalFinancedByRef[c.referencia] ?? c.total_financiado}
-                                // También es buena práctica detenerlo en eventos específicos del input
                                 onPointerDown={(e) => e.stopPropagation()}
+                                onClick={(e) => e.stopPropagation()}
                                 onValueChange={(val) => {
-                                  if (!val) return;
                                   settotalFinancedByRef((prev) => ({ ...prev, [c.referencia]: val }));
                                 }}
                                 type="number"
@@ -536,21 +557,24 @@ export default function ConsolidatedNotificationsPage() {
                             <TableCell className="text-default-500">{c.referencia}</TableCell>
                             <TableCell className="text-default-500">
                               <DatePicker
-                                value={approvedDateByRef[c.referencia] ?? parseDate(c.fecha_aprobado)} // yyyy-mm-dd ✅
+                                aria-label={`Fecha de aprobación de la referencia ${c.referencia}`}
+                                value={approvedDateByRef[c.referencia] ?? parseDate(c.fecha_aprobado)}
                                 onChange={(val) => {
                                   if (!val) return;
-                                  // DatePicker sin hora => CalendarDate
-                                  setApprovedDateByRef((prev) => ({ ...prev, [c.referencia]: val as CalendarDate }));
+                                  setApprovedDateByRef((prev) => ({
+                                    ...prev,
+                                    [c.referencia]: val as CalendarDate,
+                                  }));
                                 }}
                               />
                             </TableCell>
                             <TableCell className="text-default-500 min-w-[80px]">
                               <Input
+                                aria-label={`Acierta de la referencia ${c.referencia}`}
                                 value={aciertaByRef[c.referencia] ?? c.acierta}
-                                // También es buena práctica detenerlo en eventos específicos del input
                                 onPointerDown={(e) => e.stopPropagation()}
+                                onClick={(e) => e.stopPropagation()}
                                 onValueChange={(val) => {
-                                  if (!val) return;
                                   setAciertaByRef((prev) => ({ ...prev, [c.referencia]: val }));
                                 }}
                                 type="number"
@@ -570,6 +594,7 @@ export default function ConsolidatedNotificationsPage() {
                             <TableCell className="text-right">
                               <Button
                                 isIconOnly
+                                aria-label="Ver detalle del crédito"
                                 size="sm"
                                 radius="full"
                                 variant="light"
@@ -615,6 +640,10 @@ export default function ConsolidatedNotificationsPage() {
                           ].join(" "),
                         }}
                       >
+                        <ListboxItem key="documento_estudiante">
+                          <Row label="DOCUMENTO ESTUDIANTE" value={detail?.estudiante ?? "-"} />
+                        </ListboxItem>
+
                         <ListboxItem key="nombre">
                           <Row label="ESTUDIANTE" value={detail?.nombre_estudiante ?? "-"} />
                         </ListboxItem>
@@ -733,7 +762,11 @@ export default function ConsolidatedNotificationsPage() {
                   LÍNEAS ASOCIADAS
                 </p>
                 <Tooltip content="Cargar Lineas de destino" placement="top" color="success">
-                  <Button isIconOnly radius="full" isDisabled={loading} variant="solid" color="success" className="ms-auto" onPress={searchCreditLine}>
+                  <Button isIconOnly
+                    aria-label="Cargar líneas de crédito"
+                    radius="full" isDisabled={loading}
+                    variant="solid" color="success"
+                    className="ms-auto" onPress={searchCreditLine}>
                     <Icon name="database_search" className="text-2xl" />
                   </Button>
                 </Tooltip>

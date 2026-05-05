@@ -19,6 +19,10 @@ import { AlertService } from "@/src/services/alert.service";
 
 interface Credit {
   id: number;
+  idHolder: any,
+  holderName: any,
+  idStudent: any,
+  student: any,
   state: string;
   line: string;
   amount: number;
@@ -126,6 +130,10 @@ export function FilterSection({
     // 1. Opcional: Mapear los datos para que las cabeceras del Excel sean bonitas
     const dataToExport = credits.map(c => ({
       "ID": c.id,
+      "Documento titular": c.idHolder,
+      "Nombre titular": c.holderName,
+      "Documento estudiante": c.idStudent,
+      "Estudiante": c.student,
       "Estado": c.state,
       "Línea": c.line,
       "Monto": c.amount,
