@@ -754,18 +754,18 @@ export default function ConsolidatedNotificationsPage() {
             <h2 className="text-base font-semibold">Configuración de Envío</h2>
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 sticky" style={{ top: '20px' }}>
             {/* === LINEAS ASOCIADAS (DINÁMICO SEGÚN SELECCIÓN) === */}
             <Card className="rounded-2xl border border-neutral-200/70 bg-white/80 shadow-sm backdrop-blur dark:border-neutral-800/70 dark:bg-neutral-950/60">
               <CardHeader className="px-4 pt-4 pb-2">
                 <p className="text-xs font-semibold tracking-wide text-default-500">
                   LÍNEAS ASOCIADAS
                 </p>
-                <Tooltip content="Cargar Lineas de destino" placement="top" color="success">
+                <Tooltip content="Cargar Lineas de destino" placement="top" color="primary">
                   <Button isIconOnly
                     aria-label="Cargar líneas de crédito"
                     radius="full" isDisabled={loading}
-                    variant="solid" color="success"
+                    variant="solid" color="primary"
                     className="ms-auto" onPress={searchCreditLine}>
                     <Icon name="database_search" className="text-2xl" />
                   </Button>
