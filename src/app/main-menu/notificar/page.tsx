@@ -43,7 +43,7 @@ import { DatePicker } from "@heroui/date-picker";
 import { parseDate, CalendarDate } from "@internationalized/date";
 
 type NotificationStatus = "Pendiente" | "Enviado";
-type CreditStatus = "DESEMBOLSADO" | "REFINANCIADO";
+type CreditStatus = "DESEMBOLSANDO" | "REFINANCIADO";
 
 type CreditRow = {
   valor_desembolso: string;
@@ -148,7 +148,7 @@ function calendarDateToISO(d: CalendarDate) {
 
 function normalizeCreditStatus(raw: string): CreditStatus | null {
   const v = (raw || "").trim().toUpperCase();
-  if (v === "DESEMBOLSADO" || v === "REFINANCIADO") return v as CreditStatus;
+  if (v === "DESEMBOLSANDO" || v === "REFINANCIADO") return v as CreditStatus;
   return null;
 }
 
@@ -216,7 +216,7 @@ export default function ConsolidatedNotificationsPage() {
 
   // Filtros
   const [creditStatuses, setCreditStatuses] = React.useState<CreditStatus[]>([
-    "DESEMBOLSADO",
+    "DESEMBOLSANDO",
     "REFINANCIADO",
   ]);
   const [notifStatuses, setNotifStatuses] = React.useState<NotificationStatus[]>([
@@ -458,7 +458,7 @@ export default function ConsolidatedNotificationsPage() {
                   label="Estado del crédito"
                   orientation="horizontal"
                 >
-                  <Checkbox value="DESEMBOLSADO">Desembolsado</Checkbox>
+                  <Checkbox value="DESEMBOLSANDO">Desembolsando</Checkbox>
                   <Checkbox value="REFINANCIADO">Refinanciado</Checkbox>
                 </CheckboxGroup>
 

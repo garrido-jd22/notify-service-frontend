@@ -49,8 +49,8 @@ function buildQuery(query?: QueryParams) {
 }
 
 function getBaseURL(custom?: string) {
-  // return custom ?? process.env.NEXT_PUBLIC_API_BASE_URL_DEMO ?? "";
-  return custom ?? process.env.NEXT_PUBLIC_API_BASE_URL_PROD ?? "";
+  return custom ?? process.env.NEXT_PUBLIC_API_BASE_URL_DEMO ?? "";
+  // return custom ?? process.env.NEXT_PUBLIC_API_BASE_URL_PROD ?? "";
 }
 
 function defaultApiKeyGetter(): string | null {
