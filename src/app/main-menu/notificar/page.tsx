@@ -43,9 +43,29 @@ import { DatePicker } from "@heroui/date-picker";
 import { parseDate, CalendarDate } from "@internationalized/date";
 
 type NotificationStatus = "Pendiente" | "Enviado";
-type CreditStatus = "DESEMBOLSANDO" | "REFINANCIADO";
+type CreditStatus = "DESEMBOLSANDO" | "DESEMBOLSADO" | "REFINANCIADO";
+
+const CREDIT_STATUS_CODES: Record<CreditStatus, string> = {
+  DESEMBOLSANDO: "6",
+  DESEMBOLSADO: "7",
+  REFINANCIADO: "19",
+};
+
+const CREDIT_STATUS_ORDER: CreditStatus[] = [
+  "REFINANCIADO",
+  "DESEMBOLSANDO",
+  "DESEMBOLSADO",
+];
+
+function getStatusQueryValue(selectedStatuses: CreditStatus[]) {
+  const uniqueSelected = [...new Set(selectedStatuses)];
+  return CREDIT_STATUS_ORDER.filter((status) => uniqueSelected.includes(status))
+    .map((status) => CREDIT_STATUS_CODES[status])
+    .join(",");
+}
 
 type CreditRow = {
+  id_credito: string;
   valor_desembolso: string;
   referencia: string;
   linea_credito: string;
@@ -105,14 +125,14 @@ function formatCOP(value: string | number) {
   }
 }
 
-async function getCredits(valueSearch: string, limit: number): Promise<{
+async function getCredits(valueSearch: string, limit: number, status: string): Promise<{
   count: number;
   credits: CreditRow[];
   errors: [];
 }> {
   return AppService.get<{ count: number; credits: CreditRow[]; errors: [] }>(
     "/v1/kuenta/receivables/custom",
-    { q: valueSearch, limit }
+    { q: valueSearch, limit, status }
   );
 }
 
@@ -146,9 +166,26 @@ function calendarDateToISO(d: CalendarDate) {
   return `${d.year}-${mm}-${dd}`;
 }
 
+function getDateValue(value?: string): CalendarDate | undefined {
+  if (!value || value.trim() === "") return undefined;
+
+  try {
+    return parseDate(value);
+  } catch {
+    return undefined;
+  }
+}
+
 function normalizeCreditStatus(raw: string): CreditStatus | null {
   const v = (raw || "").trim().toUpperCase();
-  if (v === "DESEMBOLSANDO" || v === "REFINANCIADO") return v as CreditStatus;
+
+  if (v === "6") return "DESEMBOLSANDO";
+  if (v === "7") return "DESEMBOLSADO";
+  if (v === "19") return "REFINANCIADO";
+  if (v === "DESEMBOLSANDO" || v === "DESEMBOLSADO" || v === "REFINANCIADO") {
+    return v as CreditStatus;
+  }
+
   return null;
 }
 
@@ -178,8 +215,10 @@ function buildPayload(
       const total_financiado = overrideTotalFinanced || c.total_financiado; // Si se ha modificado el total financiado.
       const idStudent = overrideidStudentByRef || c.estudiante;
       const acierta = overrideAcierta || c.acierta;
+      const estado = normalizeCreditStatus(c.estado_credito) ? CREDIT_STATUS_CODES[normalizeCreditStatus(c.estado_credito) as CreditStatus] : "";
 
       return {
+        id_credito: c.id_credito,
         valor_desembolso: c.valor_desembolso,
         referencia: c.referencia,
         linea_credito: c.linea_credito,
@@ -192,6 +231,7 @@ function buildPayload(
         estudiante: idStudent,
         nombre_estudiante: c.nombre_estudiante,
         acierta: acierta,
+        estado,
         fecha_aprobado: fecha_aprobado,
       }
     }),
@@ -217,6 +257,7 @@ export default function ConsolidatedNotificationsPage() {
   // Filtros
   const [creditStatuses, setCreditStatuses] = React.useState<CreditStatus[]>([
     "DESEMBOLSANDO",
+    "DESEMBOLSADO",
     "REFINANCIADO",
   ]);
   const [notifStatuses, setNotifStatuses] = React.useState<NotificationStatus[]>([
@@ -259,7 +300,8 @@ export default function ConsolidatedNotificationsPage() {
   const search = async () => {
     setLoading(true);
     try {
-      const data = await getCredits(query, limit);
+      const status = getStatusQueryValue(creditStatuses);
+      const data = await getCredits(query, limit, status);
       setCredits(data.credits ?? []);
       setSelectedKeys(new Set());
       setDestinationParentId("");
@@ -357,8 +399,12 @@ export default function ConsolidatedNotificationsPage() {
       const idStudent = overrideidStudentByRef || c.estudiante;
       const fecha_aprobado = overrideDate ? calendarDateToISO(overrideDate) : c.fecha_aprobado;
       const acierta = overrideAcierta || c.acierta;
+      const estado = normalizeCreditStatus(c.estado_credito)
+        ? CREDIT_STATUS_CODES[normalizeCreditStatus(c.estado_credito) as CreditStatus]
+        : "";
 
       const p = {
+        id_credito: c.id_credito,
         valor_desembolso: c.valor_desembolso,
         referencia: c.referencia,
         linea_credito: c.linea_credito,
@@ -371,6 +417,7 @@ export default function ConsolidatedNotificationsPage() {
         estudiante: idStudent,
         nombre_estudiante: c.nombre_estudiante,
         acierta: acierta,
+        estado,
         // parentId: "1111-1111-1111-1111",
         parentId: destinationParentId,
         fecha_aprobado: fecha_aprobado,
@@ -459,6 +506,7 @@ export default function ConsolidatedNotificationsPage() {
                   orientation="horizontal"
                 >
                   <Checkbox value="DESEMBOLSANDO">Desembolsando</Checkbox>
+                  <Checkbox value="DESEMBOLSADO">Desembolsado</Checkbox>
                   <Checkbox value="REFINANCIADO">Refinanciado</Checkbox>
                 </CheckboxGroup>
 
@@ -512,7 +560,12 @@ export default function ConsolidatedNotificationsPage() {
                         const credit = normalizeCreditStatus(c.estado_credito);
                         const notif = normalizeNotifStatus(c.estado_notificacion);
 
-                        const creditColor = credit === "REFINANCIADO" ? "secondary" : "primary";
+                        const creditColor =
+                          credit === "REFINANCIADO"
+                            ? "secondary"
+                            : credit === "DESEMBOLSADO"
+                              ? "warning"
+                              : "primary";
                         const notifColor =
                           notif === "Enviado" ? "success" : "warning";
 
@@ -558,7 +611,7 @@ export default function ConsolidatedNotificationsPage() {
                             <TableCell className="text-default-500">
                               <DatePicker
                                 aria-label={`Fecha de aprobación de la referencia ${c.referencia}`}
-                                value={approvedDateByRef[c.referencia] ?? parseDate(c.fecha_aprobado)}
+                                value={approvedDateByRef[c.referencia] ?? getDateValue(c.fecha_aprobado)}
                                 onChange={(val) => {
                                   if (!val) return;
                                   setApprovedDateByRef((prev) => ({
@@ -693,10 +746,10 @@ export default function ConsolidatedNotificationsPage() {
                             label="ESTADO CRÉDITO"
                             value={
                               <Chip size="sm" variant="faded" color={
-                                detail?.estado_credito === "REFINANCIADO"
-                                  ? "secondary" : "primary"}
+                                detail?.estado_credito === "7"
+                                  ? "warning" : detail?.estado_credito === "6" ? "primary" : "secondary"}
                                 className="ml-auto">
-                                {detail?.estado_credito ?? "-"}
+                                {detail?.estado_credito == "7" ? "DESEMBOLSADO" : detail?.estado_credito == "6" ? "DESEMBOLSANDO" : "REFINANCIADO" }
                               </Chip>
                             }
                           />
@@ -852,7 +905,7 @@ export default function ConsolidatedNotificationsPage() {
                   </PopoverContent>
                 </Popover>
 
-                <Popover showArrow offset={20} placement="bottom" isOpen={isOpen2} onOpenChange={(open) => setIsOpen2(open)}>
+                {/* <Popover showArrow offset={20} placement="bottom" isOpen={isOpen2} onOpenChange={(open) => setIsOpen2(open)}>
                   <PopoverTrigger>
                     <Button
                       className="w-full rounded-xl mt-3 text-white border-white"
@@ -873,7 +926,7 @@ export default function ConsolidatedNotificationsPage() {
                       </div>
                     </div>
                   </PopoverContent>
-                </Popover>
+                </Popover> */}
 
                 {/* <button className="mt-8" onClick={() => console.log(payload)}>Mostrar payload</button> */}
 
